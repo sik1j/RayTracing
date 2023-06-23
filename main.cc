@@ -13,9 +13,9 @@ Color ray_color(const Ray &ray) {
 
 int main() {
     // Image Dimensions
-
-    const int image_width = 256;
-    const int image_height = 256;
+    const double aspect_ratio = 16.0/9.0;
+    const int image_width = 400;
+    const int image_height = int(image_width / aspect_ratio);
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
