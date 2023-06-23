@@ -1,40 +1,51 @@
 #include <iostream>
+#include <optional>
 
 #include "Color.h"
 #include "Vec3.h"
 #include "Ray.h"
 
-/// @brief Determine if a ray intersects sphere
+/// @brief Determine where a given ray intersects with a sphere
 /// @param center Coords of sphere's center
 /// @param radius Radius of given sphere
 /// @param ray Ray to test intersection with
-/// @return Whether the ray intersects the sphere or not
-bool hit_sphere(const Point3 &center, double radius, const Ray &ray) {
+/// @return the point at where it hit, else nullopt if no hit
+std::optional<Point3> hit_sphere(const Point3 &center, double radius, const Ray &ray) {
     // Given the vector equation of a sphere centered at C of radius r,
     // dot(P(t)-C, P(t)-C) = r^2, where P(t) is the point that hits the sphere
     // this expands into a quadratic, and we solve for t.
     // If to check for hits
 
-    Vec3 centerToOrigin = ray.origin() - center;
+    Vec3 centerToRayOrigin = ray.origin() - center;
     double a = dot(ray.direction(), ray.direction());
-    double b = 2.0 * dot(ray.direction(), centerToOrigin);
-    double c = dot(centerToOrigin, centerToOrigin) - radius*radius;
+    double b = 2.0 * dot(ray.direction(), centerToRayOrigin);
+    double c = dot(centerToRayOrigin, centerToRayOrigin) - radius*radius;
 
     // determines if the sphere is hit or not
     double discriminant = b*b - 4*a*c;
     // hit if non-negative
-    return discriminant >= 0;
+    if (discriminant < 0) {
+        return std::optional<Point3>();
+    }
+    double t = (-b - sqrt(discriminant)) / (2.0*a);
+    return std::optional(ray.at(t));
 }
 
 // returns a lerp between white to sky blue based on the y value
 Color ray_color(const Ray &ray) {
-    // sphere of radius 0.5 at (0,0,-1)
-    if (hit_sphere(Point3(0,0,-1), 0.5, ray)) {
-        return Color(1.0, 0, 0);
+    // the t value that the ray has to be scaled by to hit the sphere
+    std::optional<Point3> isHit = hit_sphere(Point3(0,0,-1), 0.5, ray);
+    if (isHit.has_value()) {
+        Point3 hit_point = isHit.value();
+        // normalize vector
+        Vec3 normal = unit_vector(hit_point - Point3(0,0,-1));
+        // map it from [-1.0, 1.0] -> [0, 1.0]
+        return 0.5*Color(normal.x()+1, normal.y()+1, normal.z()+1);
     }
-    // normalize the y value 
+    // normalize vector 
     Vec3 unit_direction = unit_vector(ray.direction());
-    // map it from [-1.0, 1.0] to [0, 1.0], as LERP only takes t vals in [0,1.0]
+    // map it's y val from [-1.0, 1.0] -> [0, 1.0], 
+    // as LERP only takes t vals in [0,1.0]
     double t = 0.5*(unit_direction.y() + 1.0);
     // lerp between white to sky blue
     return (1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0);
