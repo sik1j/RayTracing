@@ -87,7 +87,7 @@ Vec3 operator*(const Vec3 &u, const Vec3 &v) {
     );
 }
 
-Vec3 operator*(int s, const Vec3 &v) {
+Vec3 operator*(double s, const Vec3 &v) {
     return Vec3(
         v[0] * s,
         v[1] * s,
@@ -95,11 +95,11 @@ Vec3 operator*(int s, const Vec3 &v) {
     );
 }
 
-Vec3 operator*(const Vec3 &u, int s) {
+Vec3 operator*(const Vec3 &u, double s) {
     return s * u;
 }
 
-Vec3 operator/(const Vec3 &u, int s) {
+Vec3 operator/(const Vec3 &u, double s) {
     return u * (1/s);
 }
 
