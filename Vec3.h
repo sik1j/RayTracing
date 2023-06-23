@@ -36,6 +36,7 @@ public:
         e[0] *= s;
         e[1] *= s;
         e[2] *= s;
+        return *this;
     }
 
     Vec3& operator/=(const double s) {
@@ -43,7 +44,7 @@ public:
     }
 
     double length_squared() const {
-        return dot(*this, *this);
+        return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
     }
 
     double length() const {
@@ -70,7 +71,7 @@ Vec3 operator+(const Vec3 &u, const Vec3 &v) {
     );
 }
 
-Vec3 operator+(const Vec3 &u, const Vec3 &v) {
+Vec3 operator-(const Vec3 &u, const Vec3 &v) {
     return Vec3(
         u[0] - v[0],
         u[1] - v[1],
