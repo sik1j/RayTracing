@@ -4,9 +4,14 @@
 #include "Vec3.h"
 #include "Ray.h"
 
+// returns a lerp between white to sky blue based on the y value
 Color ray_color(const Ray &ray) {
+
+    // normalize the y value 
     Vec3 unit_direction = unit_vector(ray.direction());
+    // map it from [-1.0, 1.0] to [0, 1.0], as LERP only takes t vals in [0,1.0]
     double t = 0.5*(unit_direction.y() + 1.0);
+    // lerp between white to sky blue
     return (1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0);
 }
 
@@ -25,28 +30,31 @@ int main() {
     double focal_length = 1.0;
 
     // Camera
-    auto origin = Point3(0,0,0); // Camera position
+    auto camera_origin = Point3(0,0,0); // Camera position
     auto horizontal = Vec3(viewport_width, 0, 0);
     auto vertical = Vec3(0, viewport_height, 0);
     auto lower_left_corner =
-        origin - horizontal/2 - vertical/2 - Vec3(0,0,focal_length);
+        camera_origin - horizontal/2 - vertical/2 - Vec3(0,0,focal_length);
 
     // Render
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
-    // green decreases as row's increase
     for (int row = image_height-1; row >= 0; row--) {
         std::cerr << "\rScanline remaining: " << row << ' ' << std::flush;
-        // red increases as col's increase
         for (int col = 0; col < image_width; col++) {
-            // linearly maps: [0, image_dimension-1] -> [0, 1]
-            Color pixel_color(
-                (double)row/(image_height - 1),
-                (double)col/(image_width - 1),
-                0.25
+            // How far along the row and col is as a percentage
+            double xPercentage = double(col) / (image_width - 1);
+            double yPercentage = double(row) / (image_height - 1);
+            // Ray direction points at it's respective x, and y values
+            // based on which row and col the img is currently on
+            Ray ray(
+                camera_origin, 
+                lower_left_corner 
+                + xPercentage*horizontal 
+                + yPercentage*vertical 
+                - camera_origin
             );
-
-            write_color(std::cout, pixel_color);
+            write_color(std::cout, ray_color(ray));
         }
     }
 
