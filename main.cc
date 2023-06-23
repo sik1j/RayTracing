@@ -17,6 +17,21 @@ int main() {
     const int image_width = 400;
     const int image_height = int(image_width / aspect_ratio);
 
+    // Camera shoots rays through a viewport through which it computes
+    // the colors of each pixel on screen
+    // Viewport dimesions
+    double viewport_height = 2.0;
+    double viewport_width = viewport_height * aspect_ratio;
+    double focal_length = 1.0;
+
+    // Camera
+    auto origin = Point3(0,0,0); // Camera position
+    auto horizontal = Vec3(viewport_width, 0, 0);
+    auto vertical = Vec3(0, viewport_height, 0);
+    auto lower_left_corner =
+        origin - horizontal/2 - vertical/2 - Vec3(0,0,focal_length);
+
+    // Render
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
     // green decreases as row's increase
