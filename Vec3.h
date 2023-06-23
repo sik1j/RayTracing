@@ -47,8 +47,8 @@ public:
 
 // Type aliases for Vec3
 // should probably create classes for them specifically
-using point3 = Vec3; // 3D point
-using color = Vec3; // RGB color
+using Point3 = Vec3; // 3D point
+using Color = Vec3; // RGB color
 
 // Vec3 utility functions
 std::ostream& operator<<(std::ostream &os, const Vec3 &v) {
