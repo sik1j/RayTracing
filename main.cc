@@ -1,4 +1,6 @@
 #include <iostream>
+#include "Color.h"
+#include "Vec3.h"
 
 int main() {
     // Image Dimensions
@@ -13,16 +15,14 @@ int main() {
         std::cerr << "\rScanline remaining: " << row << ' ' << std::flush;
         // red increases as col's increase
         for (int col = 0; col < image_width; col++) {
-            // linearly maps: [0, image_height-1] -> [0, 1]
-            double red = (double)row/(image_height - 1); 
-            double green = (double)col/(image_width - 1);
-            double blue = 0.25;
+            // linearly maps: [0, image_dimension-1] -> [0, 1]
+            Color pixel_color(
+                (double)row/(image_height - 1),
+                (double)col/(image_width - 1),
+                0.25
+            );
 
-            int ired = (int)(red*255);
-            int igreen = (int)(green*255);
-            int iblue = (int)(blue*255);
-
-            std::cout << ired << ' ' << igreen << ' ' << iblue << '\n';
+            write_color(std::cout, pixel_color);
         }
     }
 
