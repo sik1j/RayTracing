@@ -4,9 +4,34 @@
 #include "Vec3.h"
 #include "Ray.h"
 
+/// @brief Determine if a ray intersects sphere
+/// @param center Coords of sphere's center
+/// @param radius Radius of given sphere
+/// @param ray Ray to test intersection with
+/// @return Whether the ray intersects the sphere or not
+bool hit_sphere(const Point3 &center, double radius, const Ray &ray) {
+    // Given the vector equation of a sphere centered at C of radius r,
+    // dot(P(t)-C, P(t)-C) = r^2, where P(t) is the point that hits the sphere
+    // this expands into a quadratic, and we solve for t.
+    // If to check for hits
+
+    Vec3 centerToOrigin = ray.origin() - center;
+    double a = dot(ray.direction(), ray.direction());
+    double b = 2.0 * dot(ray.direction(), centerToOrigin);
+    double c = dot(centerToOrigin, centerToOrigin) - radius*radius;
+
+    // determines if the sphere is hit or not
+    double discriminant = b*b - 4*a*c;
+    // hit if non-negative
+    return discriminant >= 0;
+}
+
 // returns a lerp between white to sky blue based on the y value
 Color ray_color(const Ray &ray) {
-
+    // sphere of radius 0.5 at (0,0,-1)
+    if (hit_sphere(Point3(0,0,-1), 0.5, ray)) {
+        return Color(1.0, 0, 0);
+    }
     // normalize the y value 
     Vec3 unit_direction = unit_vector(ray.direction());
     // map it from [-1.0, 1.0] to [0, 1.0], as LERP only takes t vals in [0,1.0]
