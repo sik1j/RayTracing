@@ -6,6 +6,9 @@
 
 class Sphere : public Hittable {
 public:
+    Sphere() {};
+    Sphere(Point3 center, double radius) : center(center), radius(radius) {};
+
     bool hit(
         const Ray &ray, double t_min, double t_max, HitRecord &record
     ) const override;
