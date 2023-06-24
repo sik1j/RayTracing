@@ -8,10 +8,18 @@
 struct HitRecord {
     /// @brief The point that was hit
     Point3 point;
-    /// @brief The normal between P(t) and the geomtry,
+    /// @brief The normal between ray, P(t), and the geometry. 
+    // Always points oppositeto the ray
     Vec3 normal;
-    /// @brief Scalar at which P(t) hit the geomtry
+    /// @brief Scalar at which ray, P(t), hit the geometry
     double t;
+    /// @brief if the hit is on the front face of the geometry
+    bool is_front_face;
+
+    void set_face_normal(const Ray &ray, const Vec3 &outward_normal) {
+        is_front_face = dot(ray.direction(), outward_normal) < 0;
+        normal = is_front_face ? outward_normal : -outward_normal;
+    }
 };
 
 
