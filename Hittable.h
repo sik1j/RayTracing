@@ -6,10 +6,10 @@
 
 /// @brief Records the closest hit point for some ray and geometry
 struct HitRecord {
-    /// @brief The point that was hit
+    /// @brief Point that was hit
     Point3 point;
-    /// @brief The normal between ray, P(t), and the geometry. 
-    // Always points oppositeto the ray
+    /// @brief Normal between ray, P(t), and geometry. 
+    // Normalized and points opposite to the ray. 
     Vec3 normal;
     /// @brief Scalar at which ray, P(t), hit the geometry
     double t;
