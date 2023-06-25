@@ -43,13 +43,18 @@ int main() {
     for (int row = image_height-1; row >= 0; row--) {
         std::cerr << "\rScanline remaining: " << row << ' ' << std::flush;
         for (int col = 0; col < image_width; col++) {
-            // How far along the row and col is as a 
-            // fraction of width and height respectively
-            double u = double(col) / (image_width - 1);
-            double v = double(row) / (image_height - 1);
+            int samples_per_pixel = 25;
+            Color pixel_color = Color(0,0,0);
+            for (int s = 0; s < samples_per_pixel; s++) {
+                // How far along the row and col is as a 
+                // fraction of width and height respectively
+                double u = double(col + random_double()) / (image_width - 1);
+                double v = double(row + random_double()) / (image_height - 1);
 
-            Ray ray = camera.get_ray(u,v);
-            Color pixel_color = ray_color(ray, world);
+                Ray ray = camera.get_ray(u,v);
+                pixel_color += ray_color(ray, world);
+            }
+            pixel_color /= samples_per_pixel;
             write_color(std::cout, pixel_color);
         }
     }
