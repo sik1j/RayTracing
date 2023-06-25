@@ -1,47 +1,17 @@
 #include <iostream>
-#include <optional>
 
+#include "Rtweekend.h"
 #include "Color.h"
-#include "Vec3.h"
-#include "Ray.h"
+#include "HittableList.h"
+#include "Sphere.h"
 
-/// @brief Determine where a given ray intersects with a sphere
-/// @param center Coords of sphere's center
-/// @param radius Radius of given sphere
-/// @param ray Ray to test intersection with
-/// @return the point at where it hit, else nullopt if no hit
-std::optional<Point3> hit_sphere(const Point3 &center, double radius, const Ray &ray) {
-    // Given the vector equation of a sphere centered at C of radius r,
-    // dot(P(t)-C, P(t)-C) = r^2, where P(t) is the point that hits the sphere
-    // this expands into a quadratic, and we solve for t.
-    // If to check for hits
-
-    Vec3 centerToRayOrigin = ray.origin() - center;
-    double a = dot(ray.direction(), ray.direction());
-    double b = 2.0 * dot(ray.direction(), centerToRayOrigin);
-    double c = dot(centerToRayOrigin, centerToRayOrigin) - radius*radius;
-
-    // determines if the sphere is hit or not
-    double discriminant = b*b - 4*a*c;
-    // hit if non-negative
-    if (discriminant < 0) {
-        return std::optional<Point3>();
+Color ray_color(const Ray &ray, const Hittable &world) {
+    HitRecord record;
+    if (world.hit(ray, 0, infinity, record)) {
+        // visualize the normals, (x,y,z) -> (r,g,b)
+        return 0.5 * (record.normal + Color(1,1,1));
     }
-    double t = (-b - sqrt(discriminant)) / (2.0*a);
-    return std::optional(ray.at(t));
-}
 
-// returns a lerp between white to sky blue based on the y value
-Color ray_color(const Ray &ray) {
-    // the t value that the ray has to be scaled by to hit the sphere
-    std::optional<Point3> isHit = hit_sphere(Point3(0,0,-1), 0.5, ray);
-    if (isHit.has_value()) {
-        Point3 hit_point = isHit.value();
-        // normalize vector
-        Vec3 normal = unit_vector(hit_point - Point3(0,0,-1));
-        // map it from [-1.0, 1.0] -> [0, 1.0]
-        return 0.5*Color(normal.x()+1, normal.y()+1, normal.z()+1);
-    }
     // normalize vector 
     Vec3 unit_direction = unit_vector(ray.direction());
     // map it's y val from [-1.0, 1.0] -> [0, 1.0], 
@@ -58,8 +28,14 @@ int main() {
     const int image_width = 400;
     const int image_height = int(image_width / aspect_ratio);
 
+    // World to render
+    HittableList world;
+    world.add(std::make_shared<Sphere>(Point3(0,0, -1), 0.5));
+    world.add(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100));
+
     // Camera shoots rays through a viewport through which it computes
     // the colors of each pixel on screen
+
     // Viewport dimesions
     double viewport_height = 2.0;
     double viewport_width = viewport_height * aspect_ratio;
@@ -90,7 +66,8 @@ int main() {
                 + yPercentage*vertical 
                 - camera_origin
             );
-            write_color(std::cout, ray_color(ray));
+            Color pixel_color = ray_color(ray, world);
+            write_color(std::cout, pixel_color);
         }
     }
 
