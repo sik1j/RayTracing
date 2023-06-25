@@ -4,6 +4,7 @@
 #include "Color.h"
 #include "HittableList.h"
 #include "Sphere.h"
+#include "Camera.h"
 
 Color ray_color(const Ray &ray, const Hittable &world) {
     HitRecord record;
@@ -33,20 +34,8 @@ int main() {
     world.add(std::make_shared<Sphere>(Point3(0,0, -1), 0.5));
     world.add(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100));
 
-    // Camera shoots rays through a viewport through which it computes
-    // the colors of each pixel on screen
-
-    // Viewport dimesions
-    double viewport_height = 2.0;
-    double viewport_width = viewport_height * aspect_ratio;
-    double focal_length = 1.0;
-
     // Camera
-    auto camera_origin = Point3(0,0,0); // Camera position
-    auto horizontal = Vec3(viewport_width, 0, 0);
-    auto vertical = Vec3(0, viewport_height, 0);
-    auto lower_left_corner =
-        camera_origin - horizontal/2 - vertical/2 - Vec3(0,0,focal_length);
+    auto camera = Camera();
 
     // Render
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
@@ -54,18 +43,12 @@ int main() {
     for (int row = image_height-1; row >= 0; row--) {
         std::cerr << "\rScanline remaining: " << row << ' ' << std::flush;
         for (int col = 0; col < image_width; col++) {
-            // How far along the row and col is as a percentage
-            double xPercentage = double(col) / (image_width - 1);
-            double yPercentage = double(row) / (image_height - 1);
-            // Ray direction points at it's respective x, and y values
-            // based on which row and col the img is currently on
-            Ray ray(
-                camera_origin, 
-                lower_left_corner 
-                + xPercentage*horizontal 
-                + yPercentage*vertical 
-                - camera_origin
-            );
+            // How far along the row and col is as a 
+            // fraction of width and height respectively
+            double u = double(col) / (image_width - 1);
+            double v = double(row) / (image_height - 1);
+
+            Ray ray = camera.get_ray(u,v);
             Color pixel_color = ray_color(ray, world);
             write_color(std::cout, pixel_color);
         }
