@@ -5,12 +5,26 @@
 #include "HittableList.h"
 #include "Sphere.h"
 #include "Camera.h"
+#include "Vec3.h"
 
-Color ray_color(const Ray &ray, const Hittable &world) {
+Color ray_color(const Ray &ray, const Hittable &world, int depth) {
+    // recursion limit to proctect the stack from blowing up
+    if (depth <= 0) {
+        return Color(0,0,0);
+    }
+
     HitRecord record;
+    // recursively define diffuse coloring when recording a hit.
+    // After a hit, chooses random direction to reflect ray towards
+    // ray accumulates colors from all it's hits
     if (world.hit(ray, 0, infinity, record)) {
+        // random point outside the surface inside a unit sphere
+        Point3 target = record.point + record.normal + random_in_unit_sphere(); 
         // visualize the normals, (x,y,z) -> (r,g,b)
-        return 0.5 * (record.normal + Color(1,1,1));
+        return 0.5  * ray_color(
+            Ray(record.point, target - record.point), 
+            world, depth-1
+        );
     }
 
     // normalize vector 
@@ -28,7 +42,8 @@ int main() {
     const double aspect_ratio = 16.0/9.0;
     const int image_width = 400;
     const int image_height = int(image_width / aspect_ratio);
-    int samples_per_pixel = 100;
+    const int samples_per_pixel = 100;
+    const int max_depth = 50;
 
     // World to render
     HittableList world;
@@ -52,7 +67,7 @@ int main() {
                 double v = double(row + random_double()) / (image_height - 1);
 
                 Ray ray = camera.get_ray(u,v);
-                pixel_color += ray_color(ray, world);
+                pixel_color += ray_color(ray, world, max_depth);
             }
             pixel_color /= samples_per_pixel;
             write_color(std::cout, pixel_color);
