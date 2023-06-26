@@ -33,9 +33,4 @@ double clamp(double x, double min, double max) {
     return x;
 }
 
-// Common Headers
-
-#include "Ray.h"
-#include "Vec3.h"
-
 #endif
