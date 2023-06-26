@@ -1,6 +1,7 @@
 #ifndef VEC3_H
 #define VEC3_H
 
+#include "Rtweekend.h"
 #include <cmath>
 #include <iostream>
 
@@ -49,6 +50,18 @@ public:
 
     double length() const {
         return std::sqrt(length_squared());
+    }
+
+    static Vec3 random() {
+        return Vec3(random_double(), random_double(), random_double());
+    }
+
+    static Vec3 random(double min, double max) {
+        return Vec3(
+                random_double(min, max), 
+                random_double(min, max), 
+                random_double(min, max)
+        );
     }
 
 };
@@ -117,6 +130,14 @@ Vec3 cross(const Vec3 &u, const Vec3 &v) {
 
 Vec3 unit_vector(Vec3 v) {
     return v / v.length();
+}
+
+Vec3 random_in_unit_sphere() {
+    while(true) {
+        auto point = Vec3::random(-1,1);
+        if (point.length_squared() >= 1) continue;
+        return point;
+    }
 }
 
 #endif
