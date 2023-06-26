@@ -19,7 +19,7 @@ Color ray_color(const Ray &ray, const Hittable &world, int depth) {
     // ray accumulates colors from all it's hits
     if (world.hit(ray, 0, infinity, record)) {
         // random point outside the surface inside a unit sphere
-        Point3 target = record.point + record.normal + random_in_unit_sphere(); 
+        Point3 target = record.point + record.normal + random_unit_vector(); 
         // visualize the normals, (x,y,z) -> (r,g,b)
         return 0.5  * ray_color(
             Ray(record.point, target - record.point), 
