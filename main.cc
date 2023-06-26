@@ -60,6 +60,8 @@ int main() {
         std::cerr << "\rScanline remaining: " << row << ' ' << std::flush;
         for (int col = 0; col < image_width; col++) {
             Color pixel_color = Color(0,0,0);
+            // anti-aliasing
+            // slightly varys rays per pixel, and takes avg of all rays as color
             for (int s = 0; s < samples_per_pixel; s++) {
                 // How far along the row and col is as a 
                 // fraction of width and height respectively
@@ -70,6 +72,12 @@ int main() {
                 pixel_color += ray_color(ray, world, max_depth);
             }
             pixel_color /= samples_per_pixel;
+            // gamma correction for gamma=2.0
+            pixel_color = Color(
+                std::sqrt(pixel_color.r()),
+                std::sqrt(pixel_color.g()),
+                std::sqrt(pixel_color.b())
+            );
             write_color(std::cout, pixel_color);
         }
     }
