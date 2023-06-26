@@ -28,6 +28,7 @@ int main() {
     const double aspect_ratio = 16.0/9.0;
     const int image_width = 400;
     const int image_height = int(image_width / aspect_ratio);
+    int samples_per_pixel = 100;
 
     // World to render
     HittableList world;
@@ -43,7 +44,6 @@ int main() {
     for (int row = image_height-1; row >= 0; row--) {
         std::cerr << "\rScanline remaining: " << row << ' ' << std::flush;
         for (int col = 0; col < image_width; col++) {
-            int samples_per_pixel = 25;
             Color pixel_color = Color(0,0,0);
             for (int s = 0; s < samples_per_pixel; s++) {
                 // How far along the row and col is as a 
