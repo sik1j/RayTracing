@@ -1,7 +1,9 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "Ray.h"
 #include "Rtweekend.h"
+#include "Vec3.h"
 
 class Camera {
 private:
@@ -29,7 +31,7 @@ public:
     /// @param u fraction of image width: x / image_width
     /// @param v fraction of iamge height: y / image_height
     /// @return ray given the current viewport coords
-    Ray get_ray(double u, double v) {
+    Ray get_ray(double u, double v) const {
         return Ray(
             origin,
             lower_left_corner 
