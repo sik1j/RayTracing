@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 #include "Rtweekend.h"
 #include "Color.h"
@@ -53,6 +54,8 @@ int main() {
     // Camera
     auto camera = Camera();
 
+
+    auto start = std::chrono::high_resolution_clock::now();
     // Render
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
@@ -82,5 +85,8 @@ int main() {
         }
     }
 
-    std::cerr << "\nDone\n";
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop-start).count();
+
+    std::cerr << "\nDone in " << duration << " seconds\n";
 }
