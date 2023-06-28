@@ -39,3 +39,6 @@ makefile
 
 # local vscode settings
 .vscode
+
+# local info file
+image copy.txt
