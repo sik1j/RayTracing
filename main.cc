@@ -61,7 +61,8 @@ int main() {
     Render renderer(aspect_ratio, image_width, image_height, 
             samples_per_pixel, max_depth);
 
-    renderer.render(camera, world, ray_color);
+    // renderer.render(camera, world, ray_color);
+    renderer.render_to_file("image.ppm", camera, world, ray_color);
     
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop-start).count();
