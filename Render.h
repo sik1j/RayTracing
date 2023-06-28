@@ -62,4 +62,33 @@ public:
       }
     }
   }
+
+  void render_to_file(char* file_name, const Camera &camera, const Hittable &world,
+              Color (*ray_color)(const Ray &, const Hittable &, int)) {
+
+    init_file(file_name, image_width, image_height);
+    
+    auto file = std::fstream();
+    file.open(file_name);
+    if(!file.is_open()) {
+        std::cerr << "Failed to open file";
+        return;
+    }
+
+    for (int row = image_height - 1; row >= 0; row--) {
+      std::cerr << "\rScanline remaining: " << row << ' ' << std::flush;
+      for (int col = 0; col < image_width; col++) {
+        Color pixel_color = anti_alias(row, col, camera, world, ray_color);
+
+        // gamma correction for gamma=2.0
+        pixel_color =
+            Color(std::sqrt(pixel_color.r()), std::sqrt(pixel_color.g()),
+                  std::sqrt(pixel_color.b()));
+
+        int line_to_write_to = 3 + col+1 + (image_height-(row+1))*image_width;
+        write_pixel_to_file(file, pixel_color, line_to_write_to);
+      }
+    }
+    file.close();
+  }
 };
