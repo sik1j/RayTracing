@@ -117,4 +117,11 @@ Vec3 random_in_unit_sphere() {
 
 Vec3 random_unit_vector() { return unit_vector(random_in_unit_sphere()); }
 
+
+/// @return The incoming vector reflected across and away from the normal vector
+Vec3 reflect(const Vec3 &incoming_vector, const Vec3 &normal) {
+  return incoming_vector - 2*dot(incoming_vector, normal)*normal;
+}
+
+
 #endif
