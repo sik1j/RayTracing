@@ -13,7 +13,7 @@ void write_color(std::ostream &os, Color pixel_color) {
        << (int)(pixel_color.b() * 255) << '\n';
 }
 
-void init_file(char* file_to_write, int image_width, int image_height) {
+void init_file(const char* file_to_write, int image_width, int image_height) {
     auto file = std::ofstream();
     file.open(file_to_write);
     if(!file.is_open()) {

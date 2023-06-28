@@ -63,7 +63,7 @@ public:
     }
   }
 
-  void render_to_file(char* file_name, const Camera &camera, const Hittable &world,
+  void render_to_file(const char* file_name, const Camera &camera, const Hittable &world,
               Color (*ray_color)(const Ray &, const Hittable &, int)) {
 
     init_file(file_name, image_width, image_height);
