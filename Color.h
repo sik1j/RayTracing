@@ -5,7 +5,6 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <string>
 
 void write_color(std::ostream &os, Color pixel_color) {
     // Write the color value of each component mapped from [0,1] to [0,255]
@@ -14,7 +13,7 @@ void write_color(std::ostream &os, Color pixel_color) {
        << (int)(pixel_color.b() * 255) << '\n';
 }
 
-void init_file(int image_width, int image_height, std::string file_to_write) {
+void init_file(char* file_to_write, int image_width, int image_height) {
     auto file = std::ofstream();
     file.open(file_to_write);
     if(!file.is_open()) {
@@ -37,7 +36,7 @@ void init_file(int image_width, int image_height, std::string file_to_write) {
 }
 
 // @param file_row the row to put pixel_color in. Directly inserts into the given row regardless of the amount of header size
-void write_pixel_to_file(Color pixel_color, int line_to_write_to, std::fstream &file_to_write) {
+void write_pixel_to_file(std::fstream &file_to_write, Color pixel_color, int line_to_write_to) {
     // line_to_write_to - 1 because file lines are 1 indexed
     // LINE_CHAR_COUNT + 1 because file char pos is 0 indexed
     const int LINE_CHAR_COUNT = 12; 
