@@ -24,7 +24,7 @@ public:
   bool scatter(const Ray &ray_in, const HitRecord &record, Color &attenuation,
                Ray &scattered) const override {
     auto scatter_direction = record.normal + random_unit_vector();
-    scattered = ray(record.p, scatter_direction);
+    scattered = Ray(record.point, scatter_direction);
 
     // if random_unit_vector happens to be opposite to record.normal
     if (scatter_direction.near_zero()) {
