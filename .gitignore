@@ -40,5 +40,6 @@ makefile
 # local vscode settings
 .vscode
 
-# local info file
+# local files for testing
 image copy.txt
+test.cc
