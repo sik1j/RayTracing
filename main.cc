@@ -21,7 +21,7 @@ Color ray_color(const Ray &ray, const Hittable &world, int depth)
 
     HitRecord record;
 
-    if (world.hit(ray, 0, infinity, record))
+    if (world.hit(ray, 0.001, infinity, record))
     {
         Ray scattered;
         Color attenuation;
