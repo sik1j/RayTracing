@@ -62,8 +62,12 @@ public:
   }
 };
 
+// A dielectric that only refracts
 class Dielectric : public Material
 {
+private:
+  double refraction_index;
+
 public:
   Dielectric(double refraction_index) : refraction_index(refraction_index){};
 
@@ -71,11 +75,26 @@ public:
                Ray &scattered) const override
   {
     attenuation = Color(1.0, 1.0, 1.0);
-    double refraction_ratio =
-  }
 
-private:
-  double refraction_index;
+    double refraction_ratio;
+    // the refraction ratio is η/η' for a given side of a material.
+    // if the side is hit from the opposite direction, the ratio is inverted to
+    // η'/η
+    if (record.is_front_face)
+    {
+      refraction_ratio = 1.0 / refraction_index;
+    }
+    else
+    {
+      refraction_ratio = refraction_index;
+    }
+
+    Vec3 unit_direction = unit_vector(ray_in.direction());
+    Vec3 refracted = refract(unit_direction, record.normal, refraction_ratio);
+
+    scattered = Ray(record.point, refracted);
+    return true;
+  }
 };
 
 #endif
