@@ -44,16 +44,19 @@ public:
 class Metal : public Material
 {
 private:
+  // the amount of light reflected by surface
   Color albedo;
+  // how (un)clear the reflection is
+  double fuzz;
 
 public:
-  Metal(const Color &albedo) : albedo(albedo){};
+  Metal(const Color &albedo, double fuzz) : albedo(albedo), fuzz(fuzz) {};
 
   bool scatter(const Ray &ray_in, const HitRecord &record, Color &attenuation,
                Ray &scattered) const override
   {
     Vec3 reflected = reflect(unit_vector(ray_in.direction()), record.normal);
-    scattered = Ray(record.point, reflected);
+    scattered = Ray(record.point, reflected + fuzz*random_in_unit_sphere());
     attenuation = albedo;
     return (dot(scattered.direction(), record.normal) > 0);
   }
