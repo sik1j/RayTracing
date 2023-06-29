@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Vec3.h"
 #include "Render.h"
+#include "Material.h"
 
 Color ray_color(const Ray &ray, const Hittable &world, int depth) {
     // recursion limit to proctect the stack from blowing up
@@ -16,18 +17,19 @@ Color ray_color(const Ray &ray, const Hittable &world, int depth) {
     }
 
     HitRecord record;
-    // recursively define diffuse coloring when recording a hit.
-    // After a hit, chooses random direction to reflect ray towards
-    // ray accumulates colors from all it's hits
+
     if (world.hit(ray, 0, infinity, record)) {
-        // random point outside the surface inside a unit sphere
-        Point3 target = record.point + record.normal + random_unit_vector(); 
-        // visualize the normals, (x,y,z) -> (r,g,b)
-        return 0.5  * ray_color(
-            Ray(record.point, target - record.point), 
-            world, depth-1
-        );
-    }
+        Ray scattered;
+        Color attenuation;
+        
+        if (record.material_ptr->scatter(ray, record, attenuation, scattered)) {
+            return attenuation * ray_color(scattered, world, depth-1);
+        }
+        // if ray absorbed
+        return Color(0,0,0);
+   }
+
+    // background color when no hit
 
     // normalize vector 
     Vec3 unit_direction = unit_vector(ray.direction());
@@ -61,8 +63,7 @@ int main() {
     Render renderer(aspect_ratio, image_width, image_height, 
             samples_per_pixel, max_depth);
 
-    // renderer.render(camera, world, ray_color);
-    renderer.render_to_file("image.ppm", camera, world, ray_color);
+    renderer.render(camera, world, ray_color);
     
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop-start).count();
