@@ -7,6 +7,7 @@
 #include "Vec3.h"
 
 #include <iostream>
+typedef Color (*RayColorFunc)(const Ray &, const Hittable &, int);
 
 class Render
 {
@@ -18,7 +19,7 @@ private:
   const int max_depth;
   const Camera &camera;
   const Hittable &world;
-  Color (*ray_color)(const Ray &, const Hittable &, int);
+  RayColorFunc ray_color;
 
 public:
   Render();
