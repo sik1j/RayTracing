@@ -7,6 +7,10 @@
 #include "Vec3.h"
 
 #include <iostream>
+#include <vector>
+#include <thread>
+#include <mutex>
+
 typedef Color (*RayColorFunc)(const Ray &, const Hittable &, int);
 
 class Render
@@ -20,6 +24,7 @@ private:
   const Camera &camera;
   const Hittable &world;
   RayColorFunc ray_color;
+  std::mutex mtx;
 
 public:
   Render();
@@ -101,6 +106,56 @@ public:
         int line_to_write_to = 3 + col + 1 + (image_height - (row + 1)) * image_width;
         write_pixel_to_file(file, pixel_color, line_to_write_to);
       }
+    }
+    file.close();
+  }
+
+  void render_pixel_to_file(std::fstream &file, int row, int col)
+  {
+
+    Color pixel_color = anti_alias(row, col);
+
+    pixel_color =
+        Color(std::sqrt(pixel_color.r()), std::sqrt(pixel_color.g()),
+              std::sqrt(pixel_color.b()));
+
+    int line_to_write_to = 3 + col + 1 + (image_height - (row + 1)) * image_width;
+    mtx.lock();
+    write_pixel_to_file(file, pixel_color, line_to_write_to);
+    mtx.unlock();
+  }
+
+  void render_to_file_threadded(const char *file_name)
+  {
+
+    init_file(file_name, image_width, image_height);
+
+    auto file = std::fstream();
+    file.open(file_name);
+    if (!file.is_open())
+    {
+      std::cerr << "Failed to open file";
+      return;
+    }
+
+    std::vector<std::thread> threads;
+    for (int row = image_height - 1; row >= 0; row--)
+    {
+      std::cerr << "\rScanline remaining: " << row << ' ' << std::flush;
+      for (int col = 0; col < image_width; col++)
+      {
+        threads.emplace_back(
+            std::thread(&Render::render_pixel_to_file, this, std::ref(file), row, col));
+      }
+    }
+    for (int row = image_height - 1; row >= 0; row--)
+    {
+      for (int col = 0; col < image_width; col++)
+      {
+        threads.back().join();
+        threads.pop_back();
+      }
+      std::cerr << "\rThreadlines remaining: " << row << ' ' << std::flush;
     }
     file.close();
   }
