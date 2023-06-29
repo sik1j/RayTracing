@@ -3,9 +3,9 @@
 
 #include "Ray.h"
 #include "Rtweekend.h"
+#include "Hittable.h"
+#include "HitRecord.h"
 #include "Vec3.h"
-
-struct HitRecord;
 
 class Material
 {
@@ -57,6 +57,6 @@ public:
     attenuation = albedo;
     return (dot(scattered.direction(), record.normal) > 0);
   }
-}
+};
 
 #endif
