@@ -62,7 +62,7 @@ public:
   }
 };
 
-// A dielectric that only refracts
+// A dielectric with refraction, and total internal reflection
 class Dielectric : public Material
 {
 private:
@@ -90,9 +90,21 @@ public:
     }
 
     Vec3 unit_direction = unit_vector(ray_in.direction());
-    Vec3 refracted = refract(unit_direction, record.normal, refraction_ratio);
+    double cos_theta = fmin(dot(-unit_direction, record.normal), 1.0);
+    double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
 
-    scattered = Ray(record.point, refracted);
+    bool cannot_refract = refraction_ratio * sin_theta > 1.0;
+    Vec3 direction;
+    if (cannot_refract)
+    {
+      direction = reflect(unit_direction, record.normal);
+    }
+    else
+    {
+      direction = refract(unit_direction, record.normal, refraction_ratio);
+    }
+
+    scattered = Ray(record.point, direction);
     return true;
   }
 };
