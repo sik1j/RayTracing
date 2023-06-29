@@ -50,7 +50,7 @@ public:
     return pixel_color;
   }
 
-  void render()
+  void render_to_cout()
   {
 
     std::cout << "P3\n"
