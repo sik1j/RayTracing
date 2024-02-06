@@ -1,0 +1,1 @@
+A software path raytracer that runs on the cpu and produces an image in the P3 ppm file format. It implements Anti-Aliaising, and Diffuse (Matte), Metal (Glossy), and Dielectric (Glass) materials and their reflective properties.
